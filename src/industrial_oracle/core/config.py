@@ -47,6 +47,20 @@ class Settings(BaseSettings):
     WORKER_CONCURRENCY: int = 4
     OPTIMIZATION_TIMEOUT_SECONDS: int = 300
 
+    @property
+    def sync_database_url_resolved(self) -> str:
+        """Automatically derives sync driver URL from DATABASE_URL if not explicitly set."""
+        if os.environ.get("SYNC_DATABASE_URL"):
+            return os.environ["SYNC_DATABASE_URL"]
+        if os.environ.get("DATABASE_URL"):
+            url = os.environ["DATABASE_URL"]
+            if "postgresql+asyncpg://" in url:
+                return url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+            elif url.startswith("postgresql://"):
+                return url.replace("postgresql://", "postgresql+psycopg2://")
+            return url
+        return self.SYNC_DATABASE_URL
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -22,9 +22,11 @@ if "sqlalchemy" not in sys.modules:
 
 class TestMigration0005(unittest.TestCase):
     def setUp(self):
-        migration_path = "/working_dir/c_020f8ea48fd27ffd/migrations/versions/0005_integration_event_infrastructure.py"
-        self.assertTrue(os.path.exists(migration_path))
-        spec = importlib.util.spec_from_file_location("migration_0005", migration_path)
+        this_file = globals().get("__file__") or os.path.abspath("tests/unit/test_migration_0005.py")
+        project_root = os.path.abspath(os.path.join(os.path.dirname(this_file), "..", ".."))
+        self.migration_path = os.path.join(project_root, "migrations", "versions", "0005_integration_event_infrastructure.py")
+        self.assertTrue(os.path.exists(self.migration_path))
+        spec = importlib.util.spec_from_file_location("migration_0005", self.migration_path)
         self.migration = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.migration)
 
@@ -35,7 +37,7 @@ class TestMigration0005(unittest.TestCase):
         self.assertTrue(callable(getattr(self.migration, "downgrade", None)))
 
     def test_migration_0005_table_definitions(self):
-        with open("/working_dir/c_020f8ea48fd27ffd/migrations/versions/0005_integration_event_infrastructure.py") as f:
+        with open(self.migration_path) as f:
             code = f.read()
 
         # Check tables created
