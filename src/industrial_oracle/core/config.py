@@ -2,7 +2,7 @@
 
 import os
 from typing import List, Optional
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -41,9 +41,7 @@ class Settings(BaseSettings):
     WORKER_CONCURRENCY: int = 4
     OPTIMIZATION_TIMEOUT_SECONDS: int = 300
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
 # Singleton settings instance

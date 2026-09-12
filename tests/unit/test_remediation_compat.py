@@ -3,6 +3,11 @@ import pytest
 from pydantic import ValidationError
 from industrial_oracle.core.config import Settings
 import os
+from pydantic_settings import BaseSettings
+
+def test_settings_inheritance():
+    """Verify settings uses pydantic_settings.BaseSettings."""
+    assert issubclass(Settings, BaseSettings)
 
 def test_settings_loading():
     """Verify settings load correctly."""
