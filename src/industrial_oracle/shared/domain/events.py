@@ -4,13 +4,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 import uuid
 
-try:
-    from pydantic import BaseModel, Field
-except ImportError:
-    class BaseModel:
-        def __init__(self, **kwargs):
-            for k, v in kwargs.items():
-                setattr(self, k, v)
+from pydantic import BaseModel, Field
 
 
 class DomainEvent(BaseModel):

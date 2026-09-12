@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 # ==============================================================================
@@ -34,6 +34,7 @@ class AssetStatusUpdateDTO(BaseModel):
 
 
 class AssetResponseDTO(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     organization_id: uuid.UUID
     plant_id: Optional[uuid.UUID] = None
@@ -46,9 +47,6 @@ class AssetResponseDTO(BaseModel):
     location_in_plant: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        orm_mode = True
 
 
 # ==============================================================================
@@ -63,6 +61,7 @@ class ProductionLineCreateDTO(BaseModel):
 
 
 class ProductionLineResponseDTO(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     organization_id: uuid.UUID
     plant_id: uuid.UUID
@@ -72,9 +71,6 @@ class ProductionLineResponseDTO(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        orm_mode = True
 
 
 # ==============================================================================
@@ -107,6 +103,7 @@ class MachineHoursDTO(BaseModel):
 
 
 class MachineResponseDTO(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     organization_id: uuid.UUID
     asset_id: uuid.UUID
@@ -121,9 +118,6 @@ class MachineResponseDTO(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
-
 
 # ==============================================================================
 # Telemetry Point DTOs
@@ -137,6 +131,7 @@ class TelemetryPointCreateDTO(BaseModel):
 
 
 class TelemetryPointResponseDTO(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     organization_id: uuid.UUID
     machine_id: uuid.UUID
@@ -148,6 +143,3 @@ class TelemetryPointResponseDTO(BaseModel):
     last_sampled_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        orm_mode = True

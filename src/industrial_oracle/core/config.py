@@ -2,12 +2,7 @@
 
 import os
 from typing import List, Optional
-
-try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    from pydantic import BaseSettings
-
+from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -23,9 +18,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"  # "json" or "text"
 
-    # Database Configuration (PostgreSQL with asyncpg and psycopg2)
+    # Database Configuration (PostgreSQL with asyncpg)
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/industrial_oracle"
-    SYNC_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/industrial_oracle"
     DATABASE_POOL_SIZE: int = 20
     DATABASE_MAX_OVERFLOW: int = 10
     DATABASE_POOL_TIMEOUT: int = 30
@@ -46,20 +40,6 @@ class Settings(BaseSettings):
     # Background Worker & Scheduler
     WORKER_CONCURRENCY: int = 4
     OPTIMIZATION_TIMEOUT_SECONDS: int = 300
-
-    @property
-    def sync_database_url_resolved(self) -> str:
-        """Automatically derives sync driver URL from DATABASE_URL if not explicitly set."""
-        if os.environ.get("SYNC_DATABASE_URL"):
-            return os.environ["SYNC_DATABASE_URL"]
-        if os.environ.get("DATABASE_URL"):
-            url = os.environ["DATABASE_URL"]
-            if "postgresql+asyncpg://" in url:
-                return url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
-            elif url.startswith("postgresql://"):
-                return url.replace("postgresql://", "postgresql+psycopg2://")
-            return url
-        return self.SYNC_DATABASE_URL
 
     class Config:
         env_file = ".env"

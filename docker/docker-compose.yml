@@ -43,7 +43,6 @@ services:
       - ENVIRONMENT=development
       - DEBUG=true
       - DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@postgres:5432/industrial_oracle
-      - SYNC_DATABASE_URL=postgresql+psycopg2://postgres:postgrespassword@postgres:5432/industrial_oracle
       - REDIS_URL=redis://redis:6379/0
       - JWT_SECRET=industrial-oracle-super-secret-key-change-in-production-min-32-chars
     ports:
@@ -67,7 +66,6 @@ services:
     environment:
       - ENVIRONMENT=development
       - DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@postgres:5432/industrial_oracle
-      - SYNC_DATABASE_URL=postgresql+psycopg2://postgres:postgrespassword@postgres:5432/industrial_oracle
       - REDIS_URL=redis://redis:6379/0
       - JWT_SECRET=industrial-oracle-super-secret-key-change-in-production-min-32-chars
     volumes:

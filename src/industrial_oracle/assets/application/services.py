@@ -87,13 +87,13 @@ class AssetService:
             new_value={"name": asset.name, "tag": asset.asset_tag, "type": asset.asset_type},
         )
 
-        return AssetResponseDTO.from_orm(asset)
+        return AssetResponseDTO.model_validate(asset)
 
     async def get_asset(self, asset_id: uuid.UUID, organization_id: uuid.UUID) -> AssetResponseDTO:
         asset = await self.asset_repo.get_by_id(asset_id)
         if not asset or asset.organization_id != organization_id:
             raise EntityNotFoundException("Asset", asset_id)
-        return AssetResponseDTO.from_orm(asset)
+        return AssetResponseDTO.model_validate(asset)
 
     async def list_assets(
         self,
@@ -110,7 +110,7 @@ class AssetService:
             offset=offset,
             limit=limit,
         )
-        return [AssetResponseDTO.from_orm(a) for a in assets]
+        return [AssetResponseDTO.model_validate(a) for a in assets]
 
     async def update_asset(
         self,
@@ -154,7 +154,7 @@ class AssetService:
             new_value={"name": asset.name, "plant_id": str(asset.plant_id) if asset.plant_id else None},
         )
 
-        return AssetResponseDTO.from_orm(asset)
+        return AssetResponseDTO.model_validate(asset)
 
     async def change_asset_status(
         self,
@@ -192,7 +192,7 @@ class AssetService:
             new_value={"status": asset.status},
         )
 
-        return AssetResponseDTO.from_orm(asset)
+        return AssetResponseDTO.model_validate(asset)
 
     async def delete_asset(
         self,
@@ -259,13 +259,13 @@ class ProductionLineService:
             new_value={"name": line.name, "code": line.code, "capacity": line.capacity_units_per_hour},
         )
 
-        return ProductionLineResponseDTO.from_orm(line)
+        return ProductionLineResponseDTO.model_validate(line)
 
     async def get_production_line(self, line_id: uuid.UUID, organization_id: uuid.UUID) -> ProductionLineResponseDTO:
         line = await self.line_repo.get_by_id(line_id)
         if not line or line.organization_id != organization_id:
             raise EntityNotFoundException("ProductionLine", line_id)
-        return ProductionLineResponseDTO.from_orm(line)
+        return ProductionLineResponseDTO.model_validate(line)
 
     async def list_production_lines(
         self,
@@ -280,7 +280,7 @@ class ProductionLineService:
             offset=offset,
             limit=limit,
         )
-        return [ProductionLineResponseDTO.from_orm(l) for l in lines]
+        return [ProductionLineResponseDTO.model_validate(l) for l in lines]
 
 
 class MachineService:
@@ -331,13 +331,13 @@ class MachineService:
             new_value={"name": machine.name, "power_kw": machine.power_rating_kw},
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def get_machine(self, machine_id: uuid.UUID, organization_id: uuid.UUID) -> MachineResponseDTO:
         machine = await self.machine_repo.get_by_id(machine_id)
         if not machine or machine.organization_id != organization_id:
             raise EntityNotFoundException("Machine", machine_id)
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def list_machines(
         self,
@@ -354,7 +354,7 @@ class MachineService:
             offset=offset,
             limit=limit,
         )
-        return [MachineResponseDTO.from_orm(m) for m in machines]
+        return [MachineResponseDTO.model_validate(m) for m in machines]
 
     async def start_machine(
         self,
@@ -378,7 +378,7 @@ class MachineService:
             resource_id=str(machine.id),
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def stop_machine(
         self,
@@ -402,7 +402,7 @@ class MachineService:
             resource_id=str(machine.id),
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def record_machine_fault(
         self,
@@ -428,7 +428,7 @@ class MachineService:
             new_value={"code": dto.fault_code, "desc": dto.description},
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def clear_machine_fault(
         self,
@@ -451,7 +451,7 @@ class MachineService:
             resource_id=str(machine.id),
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
     async def log_operating_hours(
         self,
@@ -476,7 +476,7 @@ class MachineService:
             new_value={"added_hours": hours, "total_hours": machine.operating_hours},
         )
 
-        return MachineResponseDTO.from_orm(machine)
+        return MachineResponseDTO.model_validate(machine)
 
 
 class TelemetryService:
@@ -518,7 +518,7 @@ class TelemetryService:
             new_value={"metric": point.metric_name, "unit": point.unit},
         )
 
-        return TelemetryPointResponseDTO.from_orm(point)
+        return TelemetryPointResponseDTO.model_validate(point)
 
     async def list_machine_telemetry(
         self,
@@ -530,4 +530,4 @@ class TelemetryService:
             raise EntityNotFoundException("Machine", machine_id)
 
         points = await self.telemetry_repo.list_by_machine(machine_id)
-        return [TelemetryPointResponseDTO.from_orm(p) for p in points]
+        return [TelemetryPointResponseDTO.model_validate(p) for p in points]
