@@ -1,2 +1,37 @@
 .worktrees/
-.worktrees/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+
+# Archives
+*.tar.gz
+*.zip
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+
+M7_1_RUNTIME_PASS

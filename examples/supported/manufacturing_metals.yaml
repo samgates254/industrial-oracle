@@ -1,0 +1,96 @@
+# ==============================================================================
+# INDUSTRIAL ORACLE V0.1 — REFERENCE CONFIGURATION
+# ARCHETYPE: Continuous Metallurgy (Scrap -> Billet -> Rebar)
+# STATUS: SUPPORTED_BY_V0.1
+# ==============================================================================
+schema_version: "0.1.0"
+contract_title: "Metals Continuous Rolling Facility"
+freeze_vector: "(A,A,A,A,B,A,A,A)"
+
+configuration_policy:
+  allow_demand_shortfall: false
+
+time_horizon:
+  num_periods: 4
+  delta_t: 1.0
+  tariff_partition:
+    peak_periods: [2, 3]
+    offpeak_periods: [1, 4]
+    shoulder_periods: []
+
+resources:
+  - resource_id: "SCRAP_METAL"
+    category: "RAW"
+    initial_stock: 500.0
+    safety_stock: 50.0
+    max_storage: 1000.0
+    is_purchasable: true
+  - resource_id: "STEEL_BILLET"
+    category: "WIP"
+    initial_stock: 20.0
+    safety_stock: 0.0
+    max_storage: 300.0
+    is_purchasable: false
+  - resource_id: "REBAR_FINISHED"
+    category: "FINISHED"
+    initial_stock: 0.0
+    safety_stock: 0.0
+    max_storage: 500.0
+    is_purchasable: false
+
+processes:
+  - process_id: "SMELTING"
+    input_coefficients:
+      SCRAP_METAL: 1.05
+    output_coefficients:
+      STEEL_BILLET: 1.00
+  - process_id: "ROLLING"
+    input_coefficients:
+      STEEL_BILLET: 1.00
+    output_coefficients:
+      REBAR_FINISHED: 0.96
+
+machines:
+  - machine_id: "ARC_FURNACE"
+    capacity_rate: 60.0
+    min_load_rate: 10.0
+    fixed_power: 5.0
+    initial_state: 0
+    compatible_processes: ["SMELTING"]
+    variable_energy:
+      SMELTING: 0.65
+  - machine_id: "ROLLING_MILL"
+    capacity_rate: 50.0
+    min_load_rate: 0.0
+    fixed_power: 2.0
+    initial_state: 0
+    compatible_processes: ["ROLLING"]
+    variable_energy:
+      ROLLING: 0.35
+
+economics:
+  energy_tariffs:
+    c_peak: 25.0
+    c_offpeak: 12.0
+    c_shoulder: 0.0
+  demand_charge_rate: 450.0
+  fixed_charge: 1200.0
+  purchase_costs:
+    SCRAP_METAL: 65.0
+  setup_costs:
+    ARC_FURNACE: 400.0
+    ROLLING_MILL: 150.0
+  holding_costs:
+    SCRAP_METAL: 0.5
+    STEEL_BILLET: 1.0
+    REBAR_FINISHED: 1.5
+  penalty_costs: {}
+
+electrical_parameters:
+  power_factor: 0.85
+  contract_limit_kva: 150.0
+
+demand:
+  - resource_id: "REBAR_FINISHED"
+    period: 4
+    quantity: 80.0

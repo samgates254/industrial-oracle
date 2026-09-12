@@ -1,0 +1,72 @@
+# ==============================================================================
+# INDUSTRIAL ORACLE V0.1 — REFERENCE CONFIGURATION
+# ARCHETYPE: Cold Storage Facility with Thermodynamics
+# STATUS: NOT_REPRESENTABLE_IN_V0.1
+#
+# INTENDED REJECTION RATIONALE:
+# This file attempts to define continuous thermal states (ambient temperature,
+# thermal mass, heat ingress differential equations) which are outside the V0.1
+# mass-balance MILP kernel. The Oracle MUST honestly reject this file during validation.
+# ==============================================================================
+schema_version: "0.1.0"
+contract_title: "Refrigerated Cold Chain Terminal"
+freeze_vector: "(A,A,A,A,B,A,A,A)"
+
+configuration_policy:
+  allow_demand_shortfall: false
+
+thermal_dynamics: # UNSUPPORTED SCHEMA BLOCK
+  ambient_temperature_celsius: [28.0, 32.0, 30.0]
+  insulation_r_value: 45.0
+  target_temperature_celsius: -18.0
+
+time_horizon:
+  num_periods: 3
+  delta_t: 1.0
+  tariff_partition:
+    peak_periods: [2]
+    offpeak_periods: [1, 3]
+    shoulder_periods: []
+
+resources:
+  - resource_id: "PALLETS"
+    category: "RAW"
+    initial_stock: 50.0
+    safety_stock: 0.0
+    max_storage: 200.0
+    is_purchasable: false
+
+processes:
+  - process_id: "CHILLING"
+    input_coefficients:
+      PALLETS: 1.0
+    output_coefficients:
+      PALLETS: 1.0
+
+machines:
+  - machine_id: "CHILLER_BANK"
+    capacity_rate: 50.0
+    min_load_rate: 0.0
+    fixed_power: 10.0
+    initial_state: 0
+    compatible_processes: ["CHILLING"]
+    variable_energy:
+      CHILLING: 0.5
+
+economics:
+  energy_tariffs:
+    c_peak: 20.0
+    c_offpeak: 10.0
+    c_shoulder: 0.0
+  demand_charge_rate: 300.0
+  fixed_charge: 500.0
+  purchase_costs: {}
+  setup_costs: {}
+  holding_costs: {}
+  penalty_costs: {}
+
+electrical_parameters:
+  power_factor: 0.85
+  contract_limit_kva: 100.0
+
+demand: []
