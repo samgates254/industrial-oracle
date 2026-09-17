@@ -1,0 +1,150 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  darkMode: "class",
+  theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem",
+        lg: "1.25rem",
+        xl: "1.5rem",
+      },
+    },
+    extend: {
+      colors: {
+        app: "var(--io-bg-app)",
+        command: "var(--io-bg-command)",
+        surface: "var(--io-bg-surface)",
+        elevated: "var(--io-bg-elevated)",
+        panel: "var(--io-bg-panel)",
+        modal: "var(--io-bg-modal)",
+        overlay: "var(--io-bg-overlay)",
+        subtle: "var(--io-border-subtle)",
+        strong: "var(--io-border-strong)",
+        focus: "var(--io-border-focus)",
+        brand: {
+          DEFAULT: "var(--io-brand)",
+          strong: "var(--io-brand-strong)",
+          muted: "var(--io-brand-muted)",
+        },
+        state: {
+          normal: "var(--io-state-normal)",
+          success: "var(--io-state-success)",
+          warning: "var(--io-state-warning)",
+          critical: "var(--io-state-critical)",
+          offline: "var(--io-state-offline)",
+          degraded: "var(--io-state-degraded)",
+          maintenance: "var(--io-state-maintenance)",
+        },
+        data: {
+          telemetry: "var(--io-data-telemetry)",
+          production: "var(--io-data-production)",
+          energy: "var(--io-data-energy)",
+          inventory: "var(--io-data-inventory)",
+          logistics: "var(--io-data-logistics)",
+          maintenance: "var(--io-data-maintenance)",
+          quality: "var(--io-data-quality)",
+          optimization: "var(--io-data-optimization)",
+          analytics: "var(--io-data-analytics)",
+        },
+        ai: {
+          recommendation: "var(--io-ai-recommendation)",
+          explanation: "var(--io-ai-explanation)",
+          uncertainty: "var(--io-ai-uncertainty)",
+        },
+        audit: {
+          historical: "var(--io-audit-historical)",
+          immutable: "var(--io-audit-immutable)",
+          verified: "var(--io-audit-verified)",
+        },
+        truth: {
+          fact: "var(--io-truth-fact)",
+          optimization: "var(--io-truth-optimization)",
+          ai: "var(--io-truth-ai)",
+          decision: "var(--io-truth-decision)",
+        },
+      },
+      borderColor: {
+        DEFAULT: "var(--io-border-default)",
+        subtle: "var(--io-border-subtle)",
+        strong: "var(--io-border-strong)",
+        focus: "var(--io-border-focus)",
+      },
+      textColor: {
+        primary: "var(--io-text-primary)",
+        secondary: "var(--io-text-secondary)",
+        muted: "var(--io-text-muted)",
+        disabled: "var(--io-text-disabled)",
+        inverse: "var(--io-text-inverse)",
+      },
+      fontFamily: {
+        sans: ["var(--font-io-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-io-mono)", "ui-monospace", "monospace"],
+      },
+      fontSize: {
+        display: ["2.25rem", { lineHeight: "1.15", letterSpacing: "-0.02em", fontWeight: "500" }],
+        "page-title": ["1.375rem", { lineHeight: "1.25", letterSpacing: "-0.015em", fontWeight: "500" }],
+        "section-title": ["0.9375rem", { lineHeight: "1.3", letterSpacing: "0.01em", fontWeight: "600" }],
+        "panel-title": ["0.6875rem", { lineHeight: "1.3", letterSpacing: "0.12em", fontWeight: "600" }],
+        kpi: ["2rem", { lineHeight: "1", letterSpacing: "-0.03em", fontWeight: "500" }],
+        "kpi-sm": ["1.5rem", { lineHeight: "1", letterSpacing: "-0.02em", fontWeight: "500" }],
+        "kpi-label": ["0.625rem", { lineHeight: "1.2", letterSpacing: "0.08em", fontWeight: "600" }],
+        body: ["0.8125rem", { lineHeight: "1.5", fontWeight: "400" }],
+        copy: ["0.75rem", { lineHeight: "1.45", fontWeight: "400" }],
+        table: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }],
+        telemetry: ["0.8125rem", { lineHeight: "1.2", letterSpacing: "0.01em", fontWeight: "500" }],
+        meta: ["0.6875rem", { lineHeight: "1.35", letterSpacing: "0.02em", fontWeight: "400" }],
+        timestamp: ["0.6875rem", { lineHeight: "1.2", letterSpacing: "0.02em", fontWeight: "400" }],
+        status: ["0.625rem", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "600" }],
+        ident: ["0.75rem", { lineHeight: "1.2", letterSpacing: "0.02em", fontWeight: "500" }],
+      },
+      spacing: {
+        "page-gutter": "var(--io-space-page)",
+        "panel-pad": "var(--io-space-panel)",
+        "grid-gap": "var(--io-space-grid)",
+        "section-gap": "var(--io-space-section)",
+        "control": "var(--io-control-height)",
+        "row": "var(--io-row-height)",
+      },
+      borderRadius: {
+        control: "2px",
+        panel: "4px",
+        modal: "6px",
+        none: "0px",
+      },
+      boxShadow: {
+        panel: "0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px rgba(0,0,0,0.18)",
+        overlay: "0 16px 40px rgba(0,0,0,0.45)",
+        focus: "0 0 0 2px var(--io-bg-app), 0 0 0 4px var(--io-border-focus)",
+      },
+      transitionDuration: {
+        fast: "120ms",
+        base: "180ms",
+        slow: "280ms",
+      },
+      transitionTimingFunction: {
+        io: "cubic-bezier(0.2, 0, 0, 1)",
+      },
+      gridTemplateColumns: {
+        command: "minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr)",
+        kpis: "repeat(5, minmax(0, 1fr))",
+      },
+      zIndex: {
+        shell: "40",
+        overlay: "50",
+        modal: "60",
+        toast: "70",
+      },
+      minHeight: {
+        control: "var(--io-control-height)",
+        row: "var(--io-row-height)",
+        touch: "44px",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

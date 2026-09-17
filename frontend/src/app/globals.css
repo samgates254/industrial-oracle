@@ -1,0 +1,211 @@
+@import "../styles/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-app text-primary font-sans antialiased;
+    font-feature-settings: "ss01" on, "cv11" on;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--io-border-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--io-brand-muted);
+    color: var(--io-text-primary);
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  /* Tabular figures for telemetry / KPIs */
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .type-display {
+    @apply font-sans text-display text-primary;
+  }
+
+  .type-page-title {
+    @apply font-sans text-page-title text-primary;
+  }
+
+  .type-section {
+    @apply font-sans text-section-title text-primary;
+  }
+
+  .type-panel {
+    @apply font-sans text-panel-title uppercase text-muted;
+  }
+
+  .type-kpi {
+    @apply font-mono text-kpi tabular text-primary;
+  }
+
+  .type-kpi-sm {
+    @apply font-mono text-kpi-sm tabular text-primary;
+  }
+
+  .type-kpi-label {
+    @apply font-sans text-kpi-label uppercase text-muted;
+  }
+
+  .type-body {
+    @apply font-sans text-body text-primary;
+  }
+
+  .type-secondary {
+    @apply font-sans text-copy text-secondary;
+  }
+
+  .type-table {
+    @apply font-sans text-table text-primary;
+  }
+
+  .type-telemetry {
+    @apply font-mono text-telemetry tabular text-primary;
+  }
+
+  .type-meta {
+    @apply font-sans text-meta text-muted;
+  }
+
+  .type-timestamp {
+    @apply font-mono text-timestamp tabular text-muted;
+  }
+
+  .type-status {
+    @apply font-sans text-status uppercase;
+  }
+
+  .type-ident {
+    @apply font-mono text-ident tabular;
+  }
+
+  .io-grid {
+    display: grid;
+    gap: var(--io-space-grid);
+  }
+
+  .io-page {
+    padding: var(--io-space-page);
+  }
+
+  .hairline {
+    box-shadow: inset 0 0 0 1px var(--io-border-default);
+  }
+
+  /* Operational grammar — zones/rails/readouts, not dashboard cards */
+  .io-zone {
+    border-top: 1px solid var(--io-border-default);
+    border-bottom: 1px solid var(--io-border-default);
+    background: transparent;
+  }
+
+  .io-rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--io-border-subtle);
+    padding-bottom: 0.5rem;
+  }
+
+  .io-readout {
+    display: grid;
+    grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.35rem;
+    align-items: baseline;
+  }
+
+  .io-readout dt {
+    color: var(--io-text-muted);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .io-readout dd {
+    font-family: var(--font-io-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8125rem;
+    color: var(--io-text-primary);
+  }
+
+  /* Truth-class surfaces. Left-edge geometry + pattern — never color alone.
+     AI hatch is a semantic signature (non-deterministic), not decoration. */
+  .truth-fact {
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: var(--io-truth-fact);
+  }
+
+  .truth-optimization {
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: var(--io-truth-optimization);
+  }
+
+  .truth-ai {
+    border-left-width: 3px;
+    border-left-style: dashed;
+    border-left-color: var(--io-truth-ai);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      color-mix(in srgb, var(--io-truth-ai) 7%, transparent) 5px,
+      color-mix(in srgb, var(--io-truth-ai) 7%, transparent) 6px
+    );
+  }
+
+  .truth-decision {
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: var(--io-truth-decision);
+    background-color: var(--io-bg-elevated);
+  }
+
+  @media (max-width: 767px) {
+    .io-hide-mobile {
+      display: none;
+    }
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[80] focus:bg-modal focus:px-3 focus:py-2 focus:text-body focus:text-primary;
+  }
+}

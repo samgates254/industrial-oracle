@@ -1,0 +1,105 @@
+/* Industrial Oracle design tokens.
+   Semantic only. Components consume these — never scatter raw hex. */
+
+:root {
+  /* BACKGROUND */
+  --io-bg-app: #0b0d11;
+  --io-bg-command: #090b0f;
+  --io-bg-surface: #12151b;
+  --io-bg-elevated: #171b22;
+  --io-bg-panel: #14181f;
+  --io-bg-modal: #1b2028;
+  --io-bg-overlay: rgba(6, 8, 12, 0.72);
+
+  /* BORDERS */
+  --io-border-subtle: #1c222b;
+  --io-border-default: #2a3240;
+  --io-border-strong: #3e4858;
+  --io-border-focus: #c4a574;
+
+  /* TEXT */
+  --io-text-primary: #e7e9ed;
+  --io-text-secondary: #a7b0bb;
+  --io-text-muted: #7b8491;
+  --io-text-disabled: #515963;
+  --io-text-inverse: #0b0d11;
+
+  /* BRAND — industrial brass, not consumer purple */
+  --io-brand: #c4a574;
+  --io-brand-strong: #d4b896;
+  --io-brand-muted: rgba(196, 165, 116, 0.16);
+
+  /* SYSTEM STATES */
+  --io-state-normal: #3f9d72;
+  --io-state-success: #3f9d72;
+  --io-state-warning: #d4a017;
+  --io-state-critical: #d64545;
+  --io-state-offline: #6c7480;
+  --io-state-degraded: #d47a2a;
+  --io-state-maintenance: #4a8fd4;
+
+  /* INDUSTRIAL DATA DOMAINS */
+  --io-data-telemetry: #4aa3c7;
+  --io-data-production: #5b9e6a;
+  --io-data-energy: #d4a017;
+  --io-data-inventory: #6b8cce;
+  --io-data-logistics: #c47a4a;
+  --io-data-maintenance: #7a8aa0;
+  --io-data-quality: #3d9a8a;
+  --io-data-optimization: #c4a574;
+  --io-data-analytics: #7a9bb8;
+
+  /* INTELLIGENCE — distinct from telemetry and solver output */
+  --io-ai-recommendation: #8b6ec4;
+  --io-ai-explanation: #6e5ea8;
+  --io-ai-uncertainty: #a89050;
+
+  /* AUDIT */
+  --io-audit-historical: #6a7380;
+  --io-audit-immutable: #8a93a0;
+  --io-audit-verified: #4a9b78;
+
+  /* TRUTH CLASSES — aliases only; do not invent a second palette.
+     Human decision is not a data color (must not match optimization brass). */
+  --io-truth-fact: var(--io-data-telemetry);
+  --io-truth-optimization: var(--io-data-optimization);
+  --io-truth-ai: var(--io-ai-recommendation);
+  --io-truth-decision: var(--io-text-primary);
+
+  /* SPACING / DENSITY — compact is the operational default */
+  --io-space-page: 16px;
+  --io-space-panel: 12px;
+  --io-space-grid: 10px;
+  --io-space-section: 16px;
+  --io-control-height: 32px;
+  --io-row-height: 36px;
+
+  /* MOTION */
+  --io-duration-fast: 120ms;
+  --io-duration-base: 180ms;
+  --io-duration-slow: 280ms;
+  --io-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* SHELL */
+  --io-sidebar-width: 232px;
+  --io-sidebar-collapsed: 56px;
+  --io-topbar-height: 48px;
+  --io-contextbar-height: 36px;
+}
+
+[data-density="comfortable"] {
+  --io-space-page: 20px;
+  --io-space-panel: 16px;
+  --io-space-grid: 12px;
+  --io-space-section: 20px;
+  --io-control-height: 36px;
+  --io-row-height: 40px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --io-duration-fast: 0ms;
+    --io-duration-base: 0ms;
+    --io-duration-slow: 0ms;
+  }
+}
