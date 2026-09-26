@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from industrial_oracle.core.security import RoleEnum
 from industrial_oracle.organization.application.dtos import MembershipResponseDTO
@@ -45,7 +45,7 @@ class UserResponseDTO(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        model_config = ConfigDict(from_attributes=True)
 
 
 class UserProfileResponseDTO(BaseModel):

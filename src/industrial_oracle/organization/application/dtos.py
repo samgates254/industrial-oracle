@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class OrganizationResponseDTO(BaseModel):
@@ -16,7 +16,7 @@ class OrganizationResponseDTO(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        model_config = ConfigDict(from_attributes=True)
 
 
 class MembershipResponseDTO(BaseModel):
@@ -39,7 +39,7 @@ class SiteResponseDTO(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        model_config = ConfigDict(from_attributes=True)
 
 
 class PlantResponseDTO(BaseModel):
@@ -53,4 +53,4 @@ class PlantResponseDTO(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        model_config = ConfigDict(from_attributes=True)
