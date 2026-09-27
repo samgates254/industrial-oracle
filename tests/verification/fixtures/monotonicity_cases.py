@@ -19,21 +19,21 @@ def make_tariff_perturbed_pair():
         energy_tariffs=EnergyTariffs(c_peak=35.0, c_offpeak=15.0, c_shoulder=0.0),
         demand_charge_rate=500.0, fixed_charge=0.0, purchase_costs={}, setup_costs={}, holding_costs={}, penalty_costs={}
     )
-    f_high = f_base.copy(update={"economics": econ_high})
+    f_high = f_base.model_copy(update={"economics": econ_high})
     return f_base, f_high
 
 
 def make_power_factor_perturbed_pair():
     f_high_pf = make_micro_factory_fixture() # cos_phi = 0.80
     elec_low = ElectricalParameters(power_factor=0.60, contract_limit_kva=100.0)
-    f_low_pf = f_high_pf.copy(update={"electrical_parameters": elec_low})
+    f_low_pf = f_high_pf.model_copy(update={"electrical_parameters": elec_low})
     return f_high_pf, f_low_pf
 
 
 def make_demand_perturbed_pair():
     f_base = make_micro_factory_fixture() # demand = 36 kg
     dmd_high = [DemandOrder(resource_id="FIN", period=2, quantity=40.0)]
-    f_high = f_base.copy(update={"demand": dmd_high})
+    f_high = f_base.model_copy(update={"demand": dmd_high})
     return f_base, f_high
 
 
@@ -42,5 +42,5 @@ def make_capacity_perturbed_pair():
     mach_high = [
         Machine(machine_id="M", capacity_rate=70.0, min_load_rate=0.0, fixed_power=0.0, initial_state=0, compatible_processes=["P"], variable_energy={"P": 0.5})
     ]
-    f_high = f_base.copy(update={"machines": mach_high})
+    f_high = f_base.model_copy(update={"machines": mach_high})
     return f_base, f_high

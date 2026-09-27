@@ -155,7 +155,7 @@ class TestFactoryValidation(unittest.TestCase):
             max_storage=100.0,
             is_purchasable=True,
         )
-        factory_dup = factory.copy(update={"resources": factory.resources + [dup_res]})
+        factory_dup = factory.model_copy(update={"resources": factory.resources + [dup_res]})
         with self.assertRaises(PhysicalValidationError):
             validate_factory(factory_dup)
 
@@ -166,7 +166,7 @@ class TestFactoryValidation(unittest.TestCase):
             input_coefficients={"RAW": 1.0},
             output_coefficients={"INTERMEDIATE": 0.9},
         )
-        factory_dup = factory.copy(update={"processes": factory.processes + [dup_proc]})
+        factory_dup = factory.model_copy(update={"processes": factory.processes + [dup_proc]})
         with self.assertRaises(PhysicalValidationError):
             validate_factory(factory_dup)
 
@@ -181,7 +181,7 @@ class TestFactoryValidation(unittest.TestCase):
             compatible_processes=["P1"],
             variable_energy={"P1": 0.5},
         )
-        factory_dup = factory.copy(update={"machines": factory.machines + [dup_mach]})
+        factory_dup = factory.model_copy(update={"machines": factory.machines + [dup_mach]})
         with self.assertRaises(PhysicalValidationError):
             validate_factory(factory_dup)
 

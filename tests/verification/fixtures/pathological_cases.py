@@ -41,7 +41,7 @@ def make_demand_beyond_capacity_fixture() -> FactoryConfiguration:
     """Pillar III.2: Demand exceeds total capacity (120 kg > 100 kg). Must be INFEASIBLE in hard mode."""
     factory = make_exact_capacity_bottleneck_fixture()
     demand = [DemandOrder(resource_id="FIN", period=2, quantity=120.0)]
-    return factory.copy(update={"demand": demand})
+    return factory.model_copy(update={"demand": demand})
 
 
 def make_zero_initial_stock_with_safety_stock_fixture() -> FactoryConfiguration:

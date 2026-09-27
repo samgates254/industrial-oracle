@@ -57,11 +57,11 @@ class TestNumericalIntegrity(unittest.TestCase):
     def test_fixed_charge_verification(self):
         """Verify Z*(F2) - Z*(F1) = F2 - F1 with unchanged operational decisions."""
         f_base = make_micro_factory_fixture()
-        econ_f1 = f_base.economics.copy(update={"fixed_charge": 500.0})
-        econ_f2 = f_base.economics.copy(update={"fixed_charge": 1500.0})
+        econ_f1 = f_base.economics.model_copy(update={"fixed_charge": 500.0})
+        econ_f2 = f_base.economics.model_copy(update={"fixed_charge": 1500.0})
 
-        m1 = ModelCompiler.compile(normalize_factory(f_base.copy(update={"economics": econ_f1})))
-        m2 = ModelCompiler.compile(normalize_factory(f_base.copy(update={"economics": econ_f2})))
+        m1 = ModelCompiler.compile(normalize_factory(f_base.model_copy(update={"economics": econ_f1})))
+        m2 = ModelCompiler.compile(normalize_factory(f_base.model_copy(update={"economics": econ_f2})))
 
         res1 = self.solver.solve(m1)
         res2 = self.solver.solve(m2)
@@ -71,8 +71,8 @@ class TestNumericalIntegrity(unittest.TestCase):
     def test_adversarial_mutation_tariff_change(self):
         """Changing tariffs changes c, while A_eq, A_ub, l, u remain strictly identical."""
         f_base = make_micro_factory_fixture()
-        econ_mod = f_base.economics.copy(update={"energy_tariffs": EnergyTariffs(c_peak=50.0, c_offpeak=25.0, c_shoulder=0.0)})
-        f_mod = f_base.copy(update={"economics": econ_mod})
+        econ_mod = f_base.economics.model_copy(update={"energy_tariffs": EnergyTariffs(c_peak=50.0, c_offpeak=25.0, c_shoulder=0.0)})
+        f_mod = f_base.model_copy(update={"economics": econ_mod})
 
         m_base = ModelCompiler.compile(normalize_factory(f_base))
         m_mod = ModelCompiler.compile(normalize_factory(f_mod))
@@ -89,7 +89,7 @@ class TestNumericalIntegrity(unittest.TestCase):
         """Changing machine capacity alters only capacity rows and bounds, not economics or balance."""
         f_base = make_micro_factory_fixture()
         mach_mod = [Machine(machine_id="M", capacity_rate=80.0, min_load_rate=0.0, fixed_power=0.0, initial_state=0, compatible_processes=["P"], variable_energy={"P": 0.5})]
-        f_mod = f_base.copy(update={"machines": mach_mod})
+        f_mod = f_base.model_copy(update={"machines": mach_mod})
 
         m_base = ModelCompiler.compile(normalize_factory(f_base))
         m_mod = ModelCompiler.compile(normalize_factory(f_mod))
@@ -104,7 +104,7 @@ class TestNumericalIntegrity(unittest.TestCase):
         """Changing process transformation changes balance rows, leaving tariff rates unchanged."""
         f_base = make_micro_factory_fixture()
         proc_mod = [Process(process_id="P", input_coefficients={"RAW": 1.0}, output_coefficients={"FIN": 0.95})]
-        f_mod = f_base.copy(update={"processes": proc_mod})
+        f_mod = f_base.model_copy(update={"processes": proc_mod})
 
         m_base = ModelCompiler.compile(normalize_factory(f_base))
         m_mod = ModelCompiler.compile(normalize_factory(f_mod))
