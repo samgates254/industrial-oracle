@@ -1,7 +1,7 @@
 """Resource domain object for V0.1."""
 
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from .enums import ResourceCategory
 
 
@@ -16,5 +16,4 @@ class Resource(BaseModel):
     is_purchasable: bool
     supply_cap: Optional[List[float]] = None
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)

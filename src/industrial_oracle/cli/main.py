@@ -28,12 +28,12 @@ def load_yaml_configuration(path: str) -> dict:
 
 def parse_and_validate_configuration(data: dict) -> FactoryConfiguration:
     """Execute Level 1 Schema check (forbidding unsupported fields) and Level 2 Physical validation."""
-    known_fields = set(FactoryConfiguration.__fields__.keys())
+    known_fields = set(FactoryConfiguration.model_fields.keys())
     extra = set(data.keys()) - known_fields
     if extra:
         raise SchemaValidationError(f"Unsupported configuration fields: {sorted(list(extra))}")
     try:
-        cfg = FactoryConfiguration.parse_obj(data)
+        cfg = FactoryConfiguration.model_validate(data)
     except Exception as exc:
         raise SchemaValidationError(f"Schema structure error: {exc}") from exc
     validate_factory(cfg)

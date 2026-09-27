@@ -1,7 +1,7 @@
 """Economic parameters and tariff structure for V0.1."""
 
 from typing import Mapping
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class EnergyTariffs(BaseModel):
@@ -11,8 +11,7 @@ class EnergyTariffs(BaseModel):
     c_offpeak: float
     c_shoulder: float
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)
 
 
 class Economics(BaseModel):
@@ -26,5 +25,4 @@ class Economics(BaseModel):
     holding_costs: Mapping[str, float]
     penalty_costs: Mapping[str, float]
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)

@@ -1,7 +1,7 @@
 """Machine domain object for V0.1."""
 
 from typing import List, Mapping
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, ConfigDict, ConfigDict, field_validator
 
 
 class Machine(BaseModel):
@@ -15,11 +15,10 @@ class Machine(BaseModel):
     compatible_processes: List[str]
     variable_energy: Mapping[str, float]
 
-    @validator("initial_state")
+    @field_validator("initial_state")
     def validate_initial_state_binary(cls, v: int) -> int:
         if v not in (0, 1):
             raise ValueError(f"initial_state must be binary (0 or 1), got {v}")
         return v
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True) #

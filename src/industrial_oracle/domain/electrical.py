@@ -1,6 +1,6 @@
 """Electrical parameters for V0.1."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ElectricalParameters(BaseModel):
@@ -9,5 +9,4 @@ class ElectricalParameters(BaseModel):
     power_factor: float
     contract_limit_kva: float
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)

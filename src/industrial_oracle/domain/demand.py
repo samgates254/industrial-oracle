@@ -1,6 +1,6 @@
 """Demand domain entity for V0.1."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DemandOrder(BaseModel):
@@ -10,5 +10,4 @@ class DemandOrder(BaseModel):
     period: int
     quantity: float
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)

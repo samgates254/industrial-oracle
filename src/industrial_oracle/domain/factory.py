@@ -1,7 +1,7 @@
 """Factory root configuration object for V0.1."""
 
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from .demand import DemandOrder
 from .economics import Economics
 from .electrical import ElectricalParameters
@@ -18,8 +18,7 @@ class ConfigurationPolicy(BaseModel):
     numerical_tolerance_epsilon: float = 1e-6
     base_currency: str = "KSh"
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)
 
 
 class FactoryConfiguration(BaseModel):
@@ -43,5 +42,4 @@ class FactoryConfiguration(BaseModel):
 
     demand: List[DemandOrder]
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)

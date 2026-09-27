@@ -1,7 +1,7 @@
 """Time domain objects for V0.1."""
 
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class TariffPartition(BaseModel):
@@ -11,8 +11,7 @@ class TariffPartition(BaseModel):
     offpeak_periods: List[int]
     shoulder_periods: List[int]
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)
 
 
 class TimeHorizon(BaseModel):
@@ -22,5 +21,4 @@ class TimeHorizon(BaseModel):
     delta_t: float
     tariff_partition: TariffPartition
 
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)
