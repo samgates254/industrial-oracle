@@ -4,6 +4,8 @@ export { getPlantTopology } from "./plant";
 export {
   backendFetch,
   getBackendToken,
+  loginBackend,
+  logoutBackend,
   runSyntheticSimulation,
   authorizeDecision,
   executeDecision,

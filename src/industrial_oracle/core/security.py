@@ -11,8 +11,10 @@ from typing import Any, Callable, Dict, List, Optional, Set
 import uuid
 
 from fastapi import Depends, Header, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from industrial_oracle.core.config import settings
+from industrial_oracle.core.database import get_db
 from industrial_oracle.core.exceptions import (
     AuthenticationException,
     AuthorizationException,
@@ -153,6 +155,17 @@ class RoleEnum:
     VIEWER = "VIEWER"
 
     ALL_ROLES = [OWNER, ADMIN, ENGINEER, OPERATOR, ANALYST, VIEWER]
+
+
+ROLE_GRANTABLE_ROLES: Dict[str, Set[str]] = {
+    RoleEnum.OWNER: set(RoleEnum.ALL_ROLES),
+    RoleEnum.ADMIN: set(RoleEnum.ALL_ROLES) - {RoleEnum.OWNER},
+}
+
+
+def can_grant_role(actor_role: str, target_role: str) -> bool:
+    """Return whether an organization role may grant the requested membership role."""
+    return target_role in ROLE_GRANTABLE_ROLES.get(actor_role, set())
 
 
 class PermissionEnum:
@@ -354,9 +367,12 @@ def get_token_from_header(authorization: Optional[str] = Header(None)) -> str:
     return parts[1]
 
 
-async def get_current_user(token: str = Depends(get_token_from_header)) -> Any:
+async def get_current_user(
+    token: str = Depends(get_token_from_header),
+    session: AsyncSession = Depends(get_db),
+) -> Any:
     """Resolves and validates the authenticated user from the JWT token."""
-    from industrial_oracle.identity.infrastructure.repository import user_repo
+    from industrial_oracle.identity.infrastructure.repository import PostgreSQLUserRepository
 
     payload = decode_access_token(token)
     user_id_str = payload.get("sub")
@@ -368,7 +384,7 @@ async def get_current_user(token: str = Depends(get_token_from_header)) -> Any:
     except ValueError:
         raise AuthenticationException("Invalid token subject format.")
 
-    user = await user_repo.get_by_id(user_id)
+    user = await PostgreSQLUserRepository(session).get_by_id(user_id)
     if not user:
         raise AuthenticationException("User account not found.")
 
@@ -382,6 +398,7 @@ async def get_current_user(token: str = Depends(get_token_from_header)) -> Any:
 async def get_tenant_context(
     current_user: Any = Depends(get_current_user),
     x_organization_id: Optional[str] = Header(None, alias="X-Organization-ID"),
+    session: AsyncSession = Depends(get_db),
 ) -> TenantContext:
     """Derives and validates organization isolation context for the request.
 
@@ -391,12 +408,18 @@ async def get_tenant_context(
     3. Populates permissions derived from the user's role in that organization.
     """
     from industrial_oracle.organization.infrastructure.repository import (
-        membership_repo,
-        organization_repo,
+        PostgreSQLMembershipRepository,
+        PostgreSQLOrganizationRepository,
     )
 
-    user_memberships = await membership_repo.list_user_memberships(current_user.id)
-    active_memberships = [m for m in user_memberships if m.is_active]
+    membership_repository = PostgreSQLMembershipRepository(session)
+    organization_repository = PostgreSQLOrganizationRepository(session)
+    user_memberships = await membership_repository.list_user_memberships(current_user.id)
+    active_memberships = [
+        membership
+        for membership in user_memberships
+        if membership.is_active and membership.status == "ACTIVE"
+    ]
 
     if not active_memberships:
         raise AuthorizationException("User has no active organization memberships.")
@@ -428,7 +451,7 @@ async def get_tenant_context(
                 "User belongs to multiple organizations. Please specify the target organization using the 'X-Organization-ID' header.",
             )
 
-    org = await organization_repo.get_by_id(target_org_id)
+    org = await organization_repository.get_by_id(target_org_id)
     if not org or org.status != "ACTIVE":
         raise AuthorizationException("Organization is not active or does not exist.")
 

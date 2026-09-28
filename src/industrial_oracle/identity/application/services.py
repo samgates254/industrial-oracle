@@ -10,10 +10,14 @@ from industrial_oracle.core.exceptions import (
     AuthenticationException,
     EntityAlreadyExistsException,
     EntityNotFoundException,
+    AuthorizationException,
     ValidationException,
 )
 from industrial_oracle.core.security import (
+    PermissionEnum,
+    ROLE_PERMISSIONS,
     RoleEnum,
+    can_grant_role,
     create_access_token,
     hash_password,
 )
@@ -127,6 +131,27 @@ class UserService:
         organization_id: uuid.UUID,
         actor_id: uuid.UUID,
     ) -> UserResponseDTO:
+        if dto.role not in RoleEnum.ALL_ROLES:
+            raise ValidationException(f"Invalid role: {dto.role}. Allowed: {RoleEnum.ALL_ROLES}")
+
+        actor = await self.user_repo.get_by_id(actor_id)
+        if not actor or not actor.is_active:
+            raise AuthorizationException("An active user account is required to create users.")
+
+        actor_membership = await self.membership_repo.get_user_membership(actor_id, organization_id)
+        if not actor_membership or not actor_membership.is_active:
+            raise AuthorizationException("An active organization membership is required to create users.")
+
+        actor_permissions = ROLE_PERMISSIONS.get(actor_membership.role, set())
+        if PermissionEnum.USERS_CREATE not in actor_permissions:
+            raise AuthorizationException("Permission denied: missing 'users.create'.")
+
+        if not can_grant_role(actor_membership.role, dto.role):
+            raise AuthorizationException(
+                f"Role '{actor_membership.role}' cannot grant the '{dto.role}' role.",
+                required_role=RoleEnum.OWNER,
+            )
+
         clean_email = dto.email.strip().lower()
         existing = await self.user_repo.get_by_email(clean_email)
 
@@ -136,9 +161,6 @@ class UserService:
                 raise EntityAlreadyExistsException("Membership", "email", clean_email)
             user = existing
         else:
-            if dto.role not in RoleEnum.ALL_ROLES:
-                raise ValidationException(f"Invalid role: {dto.role}. Allowed: {RoleEnum.ALL_ROLES}")
-            
             pwd_hash = hash_password(dto.password)
             user = User(
                 email=clean_email,

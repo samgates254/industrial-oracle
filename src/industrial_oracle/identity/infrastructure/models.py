@@ -1,6 +1,15 @@
 """SQLAlchemy database models for identity domain."""
 
-from industrial_oracle.core.database import ModelBase, Column, String, Text, Boolean, ForeignKey, Index, PG_UUID
+from industrial_oracle.core.database import (
+    Base,
+    Boolean,
+    Column,
+    ForeignKey,
+    ModelBase,
+    PG_UUID,
+    String,
+    Text,
+)
 
 
 class UserModel(ModelBase):
@@ -27,7 +36,7 @@ class PermissionModel(ModelBase):
     description = Column(Text, nullable=True)
 
 
-class RolePermissionModel(ModelBase):
+class RolePermissionModel(Base):
     __tablename__ = "role_permissions"
 
     role_id = Column(PG_UUID(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True)

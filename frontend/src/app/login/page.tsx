@@ -1,13 +1,40 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { Wordmark } from "@/components/brand/mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-
-export const metadata: Metadata = { title: "Sign in" };
+import { ApiError } from "@/lib/api/client";
+import { loginBackend } from "@/lib/api/backend";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    try {
+      await loginBackend(email, password);
+      router.push("/command");
+    } catch (cause) {
+      setError(
+        cause instanceof ApiError
+          ? cause.message
+          : "Sign-in could not be completed. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="grid min-h-screen bg-command lg:grid-cols-[minmax(280px,34%)_1fr]">
       <aside className="flex flex-col justify-between border-b border-subtle p-6 lg:border-b-0 lg:border-r">
@@ -22,21 +49,19 @@ export default function LoginPage() {
           </p>
         </div>
         <p className="type-meta mt-8 text-muted">
-          Phase 1 foundation · demo identity is labeled in the shell
+          Sign in with an account provisioned by your organization.
         </p>
       </aside>
       <main id="main" className="flex items-start p-6 lg:p-10">
         <section className="w-full max-w-md">
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4">
             <p className="type-panel">Sign in</p>
-            <Badge tone="demo">Demo identity</Badge>
           </div>
           <h2 className="type-section">Enter command center</h2>
           <p className="type-secondary mt-2">
-            Authentication is not connected to a backend in Phase 1. This is a
-            real route, not a consumer marketing form.
+            Use your Industrial Oracle account. Access is checked by the backend.
           </p>
-          <form className="mt-6 flex flex-col gap-3">
+          <form className="mt-6 flex flex-col gap-3" onSubmit={handleSubmit}>
             <label className="type-meta text-secondary" htmlFor="email">
               Operator identity
             </label>
@@ -44,9 +69,8 @@ export default function LoginPage() {
               id="email"
               name="email"
               type="email"
-              defaultValue="a.mwangi@demo.industrial-oracle"
+              required
               autoComplete="username"
-              readOnly
             />
             <label className="type-meta text-secondary" htmlFor="password">
               Passphrase
@@ -55,12 +79,16 @@ export default function LoginPage() {
               id="password"
               name="password"
               type="password"
-              defaultValue="demo"
+              required
               autoComplete="current-password"
-              readOnly
             />
-            <Button asChild variant="primary">
-              <Link href="/command">Enter command center</Link>
+            {error && (
+              <p className="type-meta text-state-critical" role="alert">
+                {error}
+              </p>
+            )}
+            <Button variant="primary" type="submit" disabled={submitting}>
+              {submitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
           <p className="type-meta mt-4">

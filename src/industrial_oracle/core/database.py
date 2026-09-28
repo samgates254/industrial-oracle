@@ -1,6 +1,7 @@
 """Database configuration, SQLAlchemy 2.x declarative base, and session management."""
 
 import asyncio
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any, AsyncGenerator, Callable, Dict, List, Optional, Type, TypeVar
 import uuid
@@ -119,33 +120,42 @@ class DatabaseSessionManager:
                 self._engine = None
                 self._sessionmaker = None
 
+    @asynccontextmanager
+    async def session_scope(self) -> AsyncGenerator[Any, None]:
+        """Provides a managed SQLAlchemy session for non-request application commands."""
+        if not HAS_SQLALCHEMY:
+            raise RuntimeError("SQLAlchemy is required for PostgreSQL operations.")
+        if self._sessionmaker is None:
+            self.initialize()
+        if self._sessionmaker is None:
+            raise RuntimeError("Database session manager could not be initialized.")
+
+        async with self._sessionmaker() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+            finally:
+                await session.close()
+
     async def get_session(self) -> AsyncGenerator[Any, None]:
         """Provides an async session context."""
-        if HAS_SQLALCHEMY and self._sessionmaker:
-            async with self._sessionmaker() as session:
-                try:
-                    yield session
-                    await session.commit()
-                except Exception:
-                    await session.rollback()
-                    raise
-                finally:
-                    await session.close()
-        else:
-            # In-memory mock session for test execution
-            yield InMemoryAsyncSession()
+        async with self.session_scope() as session:
+            yield session
 
     async def check_health(self) -> bool:
         """Verifies database connectivity."""
-        if HAS_SQLALCHEMY and self._engine:
-            try:
-                async with self._engine.connect() as conn:
-                    await conn.execute(sa.text("SELECT 1"))
-                return True
-            except Exception as e:
-                logger.error("Database health check failed: %s", e)
-                return False
-        return True
+        if not HAS_SQLALCHEMY or self._engine is None:
+            return False
+        try:
+            async with self._engine.connect() as conn:
+                await conn.execute(sa.text("SELECT 1"))
+            return True
+        except Exception as e:
+            logger.error("Database health check failed: %s", e)
+            return False
 
     async def close(self) -> None:
         if HAS_SQLALCHEMY and self._engine:

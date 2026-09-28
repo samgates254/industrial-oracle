@@ -34,6 +34,7 @@ class Membership(Entity):
         organization_id: uuid.UUID,
         role: str,
         id: Optional[uuid.UUID] = None,
+        status: str = "ACTIVE",
         is_active: bool = True,
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
@@ -42,6 +43,7 @@ class Membership(Entity):
         self.user_id = user_id
         self.organization_id = organization_id
         self.role = role
+        self.status = status
         self.is_active = is_active
 
     def change_role(self, new_role: str) -> None:

@@ -10,6 +10,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import OperationalError
 
 from industrial_oracle.assets.api.router import router as assets_router
 from industrial_oracle.inventory.api.router import router as inventory_router
@@ -94,6 +95,26 @@ async def request_tracing_and_logging_middleware(request: Request, call_next: An
         )
         return JSONResponse(
             status_code=exc.status_code,
+            content=payload,
+            headers={"X-Request-ID": req_id},
+        )
+    except (OperationalError, ConnectionRefusedError):
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        logger.error(
+            "Database unavailable while processing %s %s [%.2fms]",
+            request.method,
+            request.url.path,
+            duration_ms,
+            exc_info=True,
+        )
+        payload = format_error_response(
+            code="DATABASE_UNAVAILABLE",
+            message="The database is temporarily unavailable. Please retry shortly.",
+            request_id=req_id,
+            details={},
+        )
+        return JSONResponse(
+            status_code=503,
             content=payload,
             headers={"X-Request-ID": req_id},
         )
@@ -207,8 +228,9 @@ async def get_readiness() -> JSONResponse:
     db_ok = await db_manager.check_health()
     redis_client = await redis_manager.get_client()
     redis_ok = await redis_client.ping()
+    redis_fallback = redis_manager.using_fallback
 
-    status = "ready" if (db_ok and redis_ok) else "degraded"
+    status = "ready" if (db_ok and redis_ok and not redis_fallback) else "degraded"
     status_code = 200 if status == "ready" else 503
 
     pending_count = await outbox_repository.count_pending()
@@ -222,7 +244,11 @@ async def get_readiness() -> JSONResponse:
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "checks": {
                 "database": "up" if db_ok else "down",
-                "redis": "up" if redis_ok else "down",
+                "redis": (
+                    "in-memory fallback"
+                    if redis_fallback
+                    else "up" if redis_ok else "down"
+                ),
                 "outbox": "up",
             },
             "outbox_metrics": {

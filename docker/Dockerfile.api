@@ -9,17 +9,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependencies manifest
-COPY requirements.txt pyproject.toml ./
-
-# Install python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy source code and application
+# Install the project dependencies from the authoritative manifest.
+COPY pyproject.toml README.md ./
 COPY src/ ./src/
+RUN pip install --no-cache-dir .
+
+# Copy application code and migrations.
 COPY apps/ ./apps/
 COPY migrations/ ./migrations/
-COPY scripts/ ./scripts/
 COPY alembic.ini ./alembic.ini
 
 ENV PYTHONPATH="/app:/app/src"

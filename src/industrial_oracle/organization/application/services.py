@@ -37,7 +37,7 @@ class OrganizationService:
         results: List[OrganizationResponseDTO] = []
 
         for m in memberships:
-            if not m.is_active:
+            if not m.is_active or m.status != "ACTIVE":
                 continue
             org = await self.org_repo.get_by_id(m.organization_id)
             if org and org.status == "ACTIVE":

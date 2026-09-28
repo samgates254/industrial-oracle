@@ -56,6 +56,10 @@ class RedisManager:
         self.url = url
         self._client: Optional[Any] = None
 
+    @property
+    def using_fallback(self) -> bool:
+        return isinstance(self._client, InMemoryRedisClient)
+
     async def initialize(self) -> None:
         try:
             import redis.asyncio as aioredis
@@ -64,6 +68,8 @@ class RedisManager:
             self._client = client
             logger.info("Connected to Redis at %s", self.url)
         except Exception as exc:
+            if settings.ENVIRONMENT.casefold() != "development":
+                raise RuntimeError("Redis is required outside development.") from exc
             logger.warning("Native Redis connection unavailable (%s); using in-memory Redis client.", exc)
             self._client = InMemoryRedisClient()
 

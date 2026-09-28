@@ -38,4 +38,5 @@ class MembershipModel(ModelBase):
     user_id = Column(PG_UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     organization_id = Column(PG_UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
     role_id = Column(PG_UUID(as_uuid=True), ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
+    status = Column(String(50), nullable=False, default="ACTIVE")
     is_active = Column(Boolean, nullable=False, default=True)

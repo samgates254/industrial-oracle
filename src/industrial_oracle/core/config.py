@@ -1,7 +1,9 @@
 """Core application configuration using Pydantic Settings."""
 
-import os
-from typing import List, Optional
+import secrets
+from typing import List
+
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -29,7 +31,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Security & Tokens
-    JWT_SECRET: str = "industrial-oracle-super-secret-key-change-in-production-min-32-chars"
+    JWT_SECRET: str = Field(default="", repr=False)
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
@@ -42,6 +44,29 @@ class Settings(BaseSettings):
     OPTIMIZATION_TIMEOUT_SECONDS: int = 300
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+
+    @model_validator(mode="after")
+    def validate_jwt_secret(self) -> "Settings":
+        """Require a deployment secret; generate only an ephemeral development key."""
+        secret = self.JWT_SECRET
+        normalized_secret = secret.casefold()
+
+        if (
+            not secret
+            or len(secret.encode("utf-8")) < 32
+            or len(set(secret)) < 12
+            or "change-in-production" in normalized_secret
+            or normalized_secret in {"secret", "changeme", "change-me", "development-secret"}
+        ):
+            if self.ENVIRONMENT.casefold() == "development" and not secret:
+                self.JWT_SECRET = secrets.token_urlsafe(48)
+                return self
+            raise ValueError(
+                "JWT_SECRET must be at least 32 bytes, contain sufficient variation, "
+                "and not be a known placeholder."
+            )
+
+        return self
 
 
 # Singleton settings instance
